@@ -1,0 +1,427 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <windows.h>
+#include<cstdio>
+
+using namespace std;
+const int NAME_SIZE{ 40 };
+int clients_count{ 1 };
+int choice{};
+
+struct client {
+	char surname[NAME_SIZE]{};
+	char name[NAME_SIZE]{};
+	char patronymic[NAME_SIZE]{};
+	char pet_type[NAME_SIZE]{};
+	char pet_name[NAME_SIZE]{};
+	char adress[NAME_SIZE]{};
+};
+
+void Menu()
+{
+	cout << "Выберите действие: \n";
+	cout << "1) Зарегистрироваться \n";
+	cout << "0) Выход \n";
+	cin >> choice;
+	while ((choice != 1) && (choice != 0))
+	{
+		cout << "Вы ввели неверные данные! Попробуйте ещё раз: ";
+		cin >> choice;
+	}
+}
+
+void addEntry(client* information, int pos) {
+	if (choice == 1) {
+		for (int pos{}; pos < clients_count; pos++) {
+			cout << "Введите информацию о себе" << endl;
+			cout << "Введите свою фамилию: ";
+			cin.ignore();
+			cin.getline(information[pos].surname, NAME_SIZE);
+
+			cout << "Введите своё имя: ";
+			cin.ignore();
+			cin.getline(information[pos].name, NAME_SIZE);
+
+			cout << "Введите своё отчество: ";
+			cin.ignore();
+			cin.getline(information[pos].patronymic, NAME_SIZE);
+
+			cout << "Введите тип своего питомца (кошка, собака, кролик): ";
+			cin.ignore();
+			cin.getline(information[pos].pet_type, NAME_SIZE);
+
+			cout << "Введите кличку своего питомца: ";
+			cin.ignore();
+			cin.getline(information[pos].pet_name, NAME_SIZE);
+
+			cout << "Введите свой адрес: ";
+			cin.ignore();
+			cin.getline(information[pos].adress, NAME_SIZE);
+		}
+	}
+}
+
+//услуги
+
+const int MaxService = 3;
+
+
+struct Services {
+	string Name;
+	string Type;
+	int Price{};
+};
+
+enum COMMAND {
+	EXIT,
+	PADDOCK,
+	HAIRCUT,
+	WASH,
+	TAKING,
+	TRAINING,
+	TOOTHBRUSING,
+	NAILCLIPPING,
+	SHOW,
+	COMBING,
+	GROOMING
+};
+
+
+void MENU();
+void paddock(Services group[MaxService]);
+void haircut(Services group[MaxService]);
+void wash(Services group[MaxService]);
+void taking(Services group[MaxService]);
+void training(Services group[MaxService]);
+void toothbrussing(Services group[MaxService]);
+void nailclipping(Services group[MaxService]);
+void show(Services group[MaxService]);
+void combing(Services group[MaxService]);
+void grooming(Services group[MaxService]);
+void outputfile(int k,Services group[MaxService]);
+int remove(const char* fname);
+
+int main() {
+	setlocale(LC_ALL, "Rus");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	int pos = 1;
+	client information[32] = { 0 };
+	Menu();
+	addEntry(information, pos);
+	setlocale(LC_ALL, "Russian");
+	setlocale(LC_CTYPE, "Russian");
+	int command{};
+	Services group[MaxService];
+	if (choice == 1) {
+		do {
+			MENU();
+			cin >> command;
+			switch (command) {
+			case PADDOCK:
+				paddock(group);
+				break;
+			case HAIRCUT:
+				haircut(group);
+				break;
+			case WASH:
+				wash(group);
+				break;
+			case TAKING:
+				taking(group);
+				break;
+			case TRAINING:
+				training(group);
+				break;
+			case TOOTHBRUSING:
+				toothbrussing(group);
+				break;
+			case NAILCLIPPING:
+				nailclipping(group);
+				break;
+			case SHOW:
+				show(group);
+				break;
+			case COMBING:
+				combing(group);
+				break;
+			case GROOMING:
+				grooming(group);
+				break;
+			case EXIT:
+				break;
+			default:
+				cout << "\nВыбрана неверная услуга. Попробуйте снова\n";
+
+			}
+		} while (command);
+	}
+}
+
+void MENU() {
+	cout << "\nСписок услуг";
+	cout << "\n1.Выгул животных";
+	cout << "\n2.Стрижка и тримминг";
+	cout << "\n3.Купание";
+	cout << "\n4.Передержка";
+	cout << "\n5.Дрессировка";
+	cout << "\n6.Чистка зубов";
+	cout << "\n7.Подстригание ногтей";
+	cout << "\n8.Подготовка к выставке";
+	cout << "\n9.Вычесывание колтунов";
+	cout << "\n10.Грумминг";
+	cout << "\n0.Выход\n";
+}
+
+void paddock(Services group[MaxService]) {
+	cout << "\nВыбран раздел выгул животных\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Выгул";
+	group[i].Type = " маленьких животных ";
+	group[i].Price = 200;
+	group[i + 1].Name = "Выгул";
+	group[i + 1].Type = " животных средних размеров ";
+	group[i + 1].Price = 400;
+	group[i + 2].Name = "Выгул";
+	group[i + 2].Type = " больших животных ";
+	group[i + 2].Price = 600;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1 <<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+
+
+
+void haircut(Services group[MaxService]) {
+	cout << "\nВыбран раздел стрижек\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Стрижка/тримминг";
+	group[i].Type = " маленьких животных ";
+	group[i].Price = 400;
+	group[i + 1].Name = "Стрижка/тримминг";
+	group[i + 1].Type = " животных средних размеров ";
+	group[i + 1].Price = 600;
+	group[i + 2].Name = "Стрижка/тримминг";
+	group[i + 2].Type = " больших животных ";
+	group[i + 2].Price = 800;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void wash(Services group[MaxService]) {
+	cout << "\nВыбран раздел купания \n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Купание";
+	group[i].Type = " маленьких животных ";
+	group[i].Price = 400;
+	group[i + 1].Name = "Купание";
+	group[i + 1].Type = " животных средних размеров ";
+	group[i + 1].Price = 600;
+	group[i + 2].Name = "Купание";
+	group[i + 2].Type = " больших животных ";
+	group[i + 2].Price = 800;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void taking(Services group[MaxService]) {
+	cout << "\nВыбран раздел передержки\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Передержка";
+	group[i].Type = " сутки ";
+	group[i].Price = 700;
+	group[i + 1].Name = "Передержка";
+	group[i + 1].Type = " неделя ";
+	group[i + 1].Price = 4900;
+	group[i + 2].Name = "Передержка";
+	group[i + 2].Type = " две недели ";
+	group[i + 2].Price = 9800;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void training(Services group[MaxService]) {
+	cout << "\nВыбран раздел дрессировки\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Дрессировка";
+	group[i].Type = " базовая программа для мелких животных ";
+	group[i].Price = 700;
+	group[i + 1].Name = "Дрессировка";
+	group[i + 1].Type = " базовая программа для средних/больших животных ";
+	group[i + 1].Price = 1500;
+	for (int j = 0; j < MaxService - 1; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 2)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void toothbrussing(Services group[MaxService]) {
+	cout << "\nВыбран раздел чистки зубов\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Чистка зубов";
+	group[i].Type = " маленьких животных ";
+	group[i].Price = 400;
+	group[i + 1].Name = "Чистка зубов";
+	group[i + 1].Type = " животных средних размеров ";
+	group[i + 1].Price = 600;
+	group[i + 2].Name = "Чистка зубов";
+	group[i + 2].Type = " больших животных ";
+	group[i + 2].Price = 800;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void nailclipping(Services group[MaxService]) {
+	cout << "\nВыбран раздел подстригания когтей\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Подстригание когтей";
+	group[i].Type = " маленьким животным ";
+	group[i].Price = 200;
+	group[i + 1].Name = "Подстригание когтей";
+	group[i + 1].Type = " животным средних размеров ";
+	group[i + 1].Price = 250;
+	group[i + 2].Name = "Подстригание когтей ";
+	group[i + 2].Type = " большим животным ";
+	group[i + 2].Price = 300;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+
+void show(Services group[MaxService]) {
+	cout << "\nВыбран раздел подготовки к выставке\n";
+	int i = 0;
+	group[i].Name = "Подготовка к выставке";
+	group[i].Type = " для животных всех размеров ";
+	group[i].Price = 5600;
+	cout << group[i].Name << " " << group[i].Type << " " << group[i].Price;
+	cout << endl;
+	outputfile(1, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void combing(Services group[MaxService]) {
+	cout << "\nВыбран раздел вычесывание колтунов\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Вычесывание колтунов";
+	group[i].Type = " маленьким животным ";
+	group[i].Price = 400;
+	group[i + 1].Name = "Вычесывание колтунов";
+	group[i + 1].Type = " животным средних размеров ";
+	group[i + 1].Price = 550;
+	group[i + 2].Name = "Вычесывание колтунов";
+	group[i + 2].Type = " большим животным ";
+	group[i + 2].Price = 700;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+void grooming(Services group[MaxService]) {
+	cout << "\nВыбран раздел грумминга\n";
+	int i = 0;
+	int a{};
+	group[i].Name = "Грумминг";
+	group[i].Type = " маленьких животных ";
+	group[i].Price = 1500;
+	group[i + 1].Name = "Грумминг";
+	group[i + 1].Type = " животных средних размеров ";
+	group[i + 1].Price = 2400;
+	group[i + 2].Name = "Грумминг";
+	group[i + 2].Type = " больших животных ";
+	group[i + 2].Price = 3600;
+	for (int j = 0; j < MaxService; j++) {
+		cout <<j+1<<")"<< group[j].Name << " " << group[j].Type << " " << group[j].Price;
+		cout << endl;
+	}
+	cin >> a;
+	while ((a < 1) || (a > 3)) {
+		cout << "Выбрана неверная услуга. Попробуйте снова. \n";
+		cin >> a;
+	}
+	outputfile(a, group);
+	cout << "Успешно добавлено в корзину!";
+}
+
+void outputfile(int k, Services group[MaxService]) {
+	int i = 0;
+	ofstream outfile("cart.txt", ios_base::out|ios_base::ate|ios_base::app);
+	if (k == 1) {
+		outfile << group[i].Name << " " << group[i].Type << " " << group[i].Price << endl;
+	}
+	if (k == 2) {
+		outfile << group[i + 1].Name << " " << group[i + 1].Type << " " << group[i + 1].Price << endl;
+	}
+	if (k == 3) {
+		outfile << group[i + 2].Name << " " << group[i + 2].Type << " " << group[i + 2].Price << endl;
+	}
+}
